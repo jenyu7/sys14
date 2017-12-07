@@ -23,7 +23,7 @@ int main(int argct, char** args){
   else{
     //semaphore creation!
     //if more than 3 arguments "./run -c <num" and strcmp() == 0 
-    if((argct >= 3) && (!strcmp(args[1], "-c"))){
+    if((argct >= 3) && (strcmp(args[1], "-c") == 0)){
       sem = semget(KEY, 1, IPC_CREAT | IPC_EXCL | 0644);
       //if already exists, errno
       if (sem == -1){
@@ -40,14 +40,14 @@ int main(int argct, char** args){
     }
     //semaphore value procural!!
     //gets the semaphore val
-    else if(!strcmp(args[1], "-v")){
+    else if(strcmp(args[1], "-v") == 0){
       sem = semget(KEY, 0, 0);
       int val = semctl(sem, 0, GETVAL);
       if (val == -1){printf("Error occured: %s\n", strerror(errno));}
       else{printf("Value of semaphore: %d\n", val);}
     }
     //remove the semaphore :'(
-    else if (!strcmp(args[1], "-r")){
+    else if (strcmp(args[1], "-r") == 0){
       sem = semget(KEY, 0, 0);
       int val = semctl(sem, 0, IPC_RMID);
       if (val == -1){printf("Error occured: %s\n", strerror(errno));}
