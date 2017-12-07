@@ -11,13 +11,14 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/sem.h>
+#include <errno.h>
 #define KEY 38
 
 int main(int argct, char** args){
   int sem;
   if(argct < 2){
     printf("Too few arguments.\n");
-    printf("args: %s, %s\n", args[0], args[1]);
+    exit(0);
   }
   else{
     //semaphore creation!
@@ -32,8 +33,9 @@ int main(int argct, char** args){
       else{
 	int input;
 	sscanf(args[2], "%d", &input);
-	semctl(sem, 0, SETVAL, input);
-	printf("Semaphore %d created with value %d.\n", sem, input);
+	int det = semctl(sem, 0, SETVAL, input);
+	if (det == -1){printf("Error occured: %s\n", strerror(errno));}
+	else{printf("Semaphore %d created with value %d.\n", sem, input);}
       }
     }
     //semaphore value procural!!
@@ -41,13 +43,15 @@ int main(int argct, char** args){
     else if(!strcmp(args[1], "-v")){
       sem = semget(KEY, 0, 0);
       int val = semctl(sem, 0, GETVAL);
-      printf("Value of semaphore: %d\n", val);
+      if (val == -1){printf("Error occured: %s\n", strerror(errno));}
+      else{printf("Value of semaphore: %d\n", val);}
     }
     //remove the semaphore :'(
     else if (!strcmp(args[1], "-r")){
       sem = semget(KEY, 0, 0);
       int val = semctl(sem, 0, IPC_RMID);
-      printf("Removed semaphore: %d\n", val);
+      if (val == -1){printf("Error occured: %s\n", strerror(errno));}
+      else{printf("Removed semaphore: %d\n", val);}
     }
     else{
       printf("Could not read input.\n");
